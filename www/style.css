@@ -1,0 +1,211 @@
+/* ====================================================
+   THEME PRINCIPAL - Student Mental Health Dashboard
+   ==================================================== */
+
+/* Import de la police moderne */
+@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
+
+/* APPLIQUER LA POLICE À TOUT LE DASHBOARD */
+body, .main-sidebar, .content-wrapper, .main-header, .box, .small-box {
+  font-family: 'Inter', sans-serif;
+}
+
+/* COULEURS DE FOND GLOBALES */
+.skin-blue .main-header .logo {
+  background-color: #0f172a; /* bleu nuit */
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+.skin-blue .main-header .navbar {
+  background-color: #1e293b; /* bleu profond */
+}
+
+.skin-blue .main-sidebar {
+  background-color: #ffffff;
+  border-right: 1px solid #e2e8f0;
+}
+
+.skin-blue .sidebar-menu > li > a {
+  color: #334155;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.skin-blue .sidebar-menu > li > a:hover {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.skin-blue .sidebar-menu > li.active > a {
+  background-color: #eef2ff;
+  color: #3b82f6;
+  border-left-color: #3b82f6;
+  font-weight: 600;
+}
+
+/* HEADER TITRE */
+.main-header .logo {
+  font-size: 18px;
+}
+
+/* BOXES (CARTES) */
+.box {
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-top: 3px solid #3b82f6;
+  margin-bottom: 20px;
+}
+
+.box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+}
+
+.box-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.box-title {
+  font-weight: 600;
+  font-size: 16px;
+  color: #0f172a;
+}
+
+/* VALUE BOX (KPI) */
+.small-box {
+  border-radius: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+  transition: all 0.2s;
+}
+
+.small-box:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+}
+
+.small-box .icon {
+  font-size: 48px;
+  opacity: 0.2;
+  transition: opacity 0.2s;
+}
+
+.small-box:hover .icon {
+  opacity: 0.4;
+}
+
+/* PERSONNALISATION DES COULEURS DES VALUE BOX (par défaut shinydashboard, on renforce) */
+.bg-blue, .bg-green, .bg-yellow, .bg-red, .bg-aqua, .bg-purple {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+}
+
+.bg-green {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+}
+
+.bg-yellow {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+}
+
+.bg-red {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+}
+
+/* SIDEBAR SCROLLBAR (plus moderne) */
+.sidebar-menu {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+.sidebar-menu::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar-menu::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+
+/* FILTRES DANS LA SIDEBAR */
+.form-group {
+  margin-bottom: 20px;
+}
+
+.control-label {
+  font-weight: 600;
+  font-size: 13px;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.form-control {
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  padding: 8px 12px;
+  font-size: 13px;
+  transition: border 0.2s;
+}
+
+.form-control:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+}
+
+/* CHECKBOX GROUP (troubles) */
+.checkbox {
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.checkbox label {
+  font-weight: normal;
+  color: #334155;
+}
+
+/* HR SEPARATOR */
+hr {
+  border-top: 1px solid #e2e8f0;
+  margin: 15px 0;
+}
+
+/* ONGLETS MENU (sidebarMenu) déjà stylé plus haut */
+/* CONTENU PRINCIPAL : fond clair */
+.content-wrapper, .right-side {
+  background-color: #f8fafc;
+}
+
+/* TITRES DANS LES BOX PLOTLY (optionnel) */
+.js-plotly-plot .plotly .main-title {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 600 !important;
+}
+
+/* STYLE POUR LES GRAPH STATIC (grid, lollipop) */
+.plot-container {
+  background: white;
+  border-radius: 12px;
+  padding: 5px;
+}
+
+/* RESPONSIVE : ajustement sur mobile */
+@media (max-width: 768px) {
+  .box {
+    border-radius: 12px;
+  }
+  .small-box .icon {
+    font-size: 32px;
+  }
+  .small-box h3 {
+    font-size: 28px;
+  }
+  .main-header .logo {
+    font-size: 14px;
+  }
+}

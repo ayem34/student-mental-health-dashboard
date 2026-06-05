@@ -1,0 +1,450 @@
+---
+title: "data_cleaning"
+author: "ayemou"
+date: "2026-06-05"
+output: html_document
+---
+1. Chargement et nettoyage
+```{r}
+library(tidyverse)
+
+#=====================================================
+# CHARGEMENT
+#=====================================================
+
+data <- read.csv(
+  "data/Student_Mental_health.csv",
+  stringsAsFactors = FALSE
+)
+
+
+
+#=====================================================
+# RENOMMAGE DES COLONNES
+#=====================================================
+
+names(data) <- c(
+  "timestamp",
+  "gender",
+  "age",
+  "course",
+  "year",
+  "cgpa",
+  "marital_status",
+  "depression",
+  "anxiety",
+  "panic",
+  "treatment"
+)
+
+#=====================================================
+# NETTOYAGE
+#=====================================================
+
+# Harmonisation des années
+
+data$year <- str_trim(data$year)
+
+data$year <- case_when(
+  str_detect(tolower(data$year), "1") ~ "Year 1",
+  str_detect(tolower(data$year), "2") ~ "Year 2",
+  str_detect(tolower(data$year), "3") ~ "Year 3",
+  str_detect(tolower(data$year), "4") ~ "Year 4",
+  TRUE ~ data$year
+)
+
+#=====================================================
+# IMPUTATION DE L'AGE MANQUANT
+#=====================================================
+
+median_age <- median(data$age, na.rm = TRUE)
+
+data$age[is.na(data$age)] <- median_age
+
+#=====================================================
+# CATEGORISATION DU CGPA
+#=====================================================
+
+data$cgpa_level <- case_when(
+  data$cgpa %in% c("0 - 1.99", "2.00 - 2.49") ~ "Faible",
+  data$cgpa == "2.50 - 2.99" ~ "Moyen",
+  data$cgpa == "3.00 - 3.49" ~ "Bon",
+  str_detect(data$cgpa, "3.50") ~ "Excellent"
+)
+
+data$cgpa_level <- factor(
+  data$cgpa_level,
+  levels = c("Faible","Moyen","Bon","Excellent"),
+  ordered = TRUE
+)
+
+#=====================================================
+# VARIABLES BINAIRES
+#=====================================================
+
+vars_binaires <- c(
+  "marital_status",
+  "depression",
+  "anxiety",
+  "panic",
+  "treatment"
+)
+
+data[vars_binaires] <- lapply(
+  data[vars_binaires],
+  function(x){
+    factor(
+      x,
+      levels = c("No","Yes"),
+      ordered = TRUE
+    )
+  }
+)
+
+#=====================================================
+# FACTEURS
+#=====================================================
+
+data$gender <- factor(data$gender)
+
+data$year <- factor(
+  data$year,
+  levels = c(
+    "Year 1",
+    "Year 2",
+    "Year 3",
+    "Year 4"
+  )
+)
+
+#=====================================================
+# APERCU
+#=====================================================
+
+glimpse(data)
+summary(data)
+```
+2. Statistiques descriptives
+
+```{r}
+#=====================================================
+# AGE
+#=====================================================
+
+summary(data$age)
+
+#=====================================================
+# GENRE
+#=====================================================
+
+table(data$gender)
+
+prop.table(table(data$gender))*100
+
+#=====================================================
+# FILIERES
+#=====================================================
+
+sort(table(data$course), decreasing = TRUE)
+
+#=====================================================
+# CGPA
+#=====================================================
+
+table(data$cgpa_level)
+
+#=====================================================
+# TROUBLES MENTAUX
+#=====================================================
+
+prop.table(table(data$depression))*100
+
+prop.table(table(data$anxiety))*100
+
+prop.table(table(data$panic))*100
+
+#=====================================================
+# SPECIALISTE
+#=====================================================
+
+prop.table(table(data$treatment))*100
+```
+3. Visualisations Profil étudiant
+
+Répartition par filière (Top 10)
+```{r}
+top_course <- data %>%
+  count(course, sort = TRUE) %>%
+  slice_head(n = 10)
+
+ggplot(top_course,
+       aes(
+         x = reorder(course,n),
+         y = n
+       )) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Top 10 filières",
+    x = "",
+    y = "Effectif"
+  ) +
+  theme_minimal()
+```
+Genre
+
+```{r}
+ggplot(data,
+       aes(gender)) +
+  geom_bar() +
+  theme_minimal()
+```
+Année
+```{r}
+ggplot(data,
+       aes(year)) +
+  geom_bar() +
+  theme_minimal()
+```
+Histogramme âge
+
+```{r}
+ggplot(data,
+       aes(age)) +
+  geom_histogram(
+    bins = 10
+  ) +
+  theme_minimal()
+```
+
+CGPA par genre
+
+```{r}
+ggplot(data,
+       aes(
+         gender,
+         fill = cgpa_level
+       )) +
+  geom_bar() +
+  theme_minimal()
+```
+CGPA par année
+```{r}
+ggplot(data,
+       aes(
+         year,
+         fill = cgpa_level
+       )) +
+  geom_bar() +
+  theme_minimal()
+```
+4. Santé mentale
+
+Prévalence
+```{r}
+mental <- tibble(
+  Trouble = c(
+    "Dépression",
+    "Anxiété",
+    "Panique"
+  ),
+  Taux = c(
+    mean(data$depression=="Yes")*100,
+    mean(data$anxiety=="Yes")*100,
+    mean(data$panic=="Yes")*100
+  )
+)
+
+ggplot(
+  mental,
+  aes(Trouble,Taux)
+)+
+  geom_col()+
+  theme_minimal()
+```
+Comparaison par genre
+
+```{r}
+mental_gender <- data %>%
+  pivot_longer(
+    depression:panic,
+    names_to = "trouble",
+    values_to = "value"
+  ) %>%
+  filter(value=="Yes")
+
+ggplot(
+  mental_gender,
+  aes(gender)
+)+
+  geom_bar()+
+  facet_wrap(~trouble)+
+  theme_minimal()
+```
+Comparaison par année
+
+```{r}
+ggplot(
+  mental_gender,
+  aes(year)
+)+
+  geom_bar()+
+  facet_wrap(~trouble)+
+  theme_minimal()
+```
+5. Analyse croisée
+CGPA × Dépression
+
+```{r}
+ggplot(
+  data,
+  aes(
+    cgpa_level,
+    fill = depression
+  )
+)+
+  geom_bar(position = "fill")+
+  scale_y_continuous(labels = scales::percent)+
+  theme_minimal()
+```
+CGPA × Anxiété
+
+```{r}
+ggplot(
+  data,
+  aes(
+    cgpa_level,
+    fill = anxiety
+  )
+)+
+  geom_bar(position = "fill")+
+  theme_minimal()
+```
+
+CGPA × Panique
+
+```{r}
+ggplot(
+  data,
+  aes(
+    cgpa_level,
+    fill = panic
+  )
+)+
+  geom_bar(position = "fill")+
+  theme_minimal()
+```
+
+Étudiants avec les 3 troubles
+
+```{r}
+data$three_troubles <- ifelse(
+  data$depression == "Yes" &
+  data$anxiety == "Yes" &
+  data$panic == "Yes",
+  "Oui",
+  "Non"
+)
+
+table(data$three_troubles)
+
+ggplot(
+  data,
+  aes(three_troubles)
+)+
+  geom_bar()+
+  theme_minimal()
+```
+Heatmap de corrélation
+
+```{r}
+library(corrplot)
+
+mental_matrix <- data %>%
+  select(
+    depression,
+    anxiety,
+    panic
+  ) %>%
+  mutate_all(~ifelse(.=="Yes",1,0))
+
+corr <- cor(mental_matrix)
+
+corrplot(
+  corr,
+  method = "color"
+)
+```
+6. Géom personnalisé ggproto (Phase 3)
+
+
+```{r}
+GeomLollipop <- ggproto(
+  "GeomLollipop",
+  Geom,
+
+  required_aes = c("x","y"),
+
+  draw_panel = function(
+    data,
+    panel_params,
+    coord
+  ){
+
+    coords <- coord$transform(
+      data,
+      panel_params
+    )
+
+    grid::grobTree(
+
+      grid::segmentsGrob(
+        x0 = coords$x,
+        x1 = coords$x,
+        y0 = 0,
+        y1 = coords$y
+      ),
+
+      grid::pointsGrob(
+        x = coords$x,
+        y = coords$y,
+        pch = 16,
+        size = unit(4,"mm")
+      )
+    )
+  }
+)
+
+geom_lollipop <- function(...) {
+
+  layer(
+    geom = GeomLollipop,
+    stat = "identity",
+    position = "identity",
+    params = list(...)
+  )
+
+}
+
+prev_filiere <- data %>%
+  group_by(course) %>%
+  summarise(
+    depression =
+      mean(depression=="Yes")*100
+  ) %>%
+  arrange(desc(depression)) %>%
+  slice_head(n=10)
+
+ggplot(
+  prev_filiere,
+  aes(
+    reorder(course,depression),
+    depression
+  )
+)+
+  geom_lollipop()+
+  coord_flip()+
+  theme_minimal()
+```
+
+

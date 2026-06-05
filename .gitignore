@@ -1,0 +1,9 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+shinyapps/
+rsconnect/
+outputs/
+.DS_Store
+*.log
