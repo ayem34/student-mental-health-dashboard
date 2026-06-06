@@ -1,211 +1,843 @@
 /* ====================================================
-   THEME PRINCIPAL - Student Mental Health Dashboard
+   STUDENT MENTAL HEALTH DASHBOARD
+   Theme: Santé & Bien-être — vert forêt + menthe + fond nacré
+   Direction visuelle 1 — palette exacte de la maquette
    ==================================================== */
 
-/* Import de la police moderne */
-@import url('https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&display=swap');
 
-/* APPLIQUER LA POLICE À TOUT LE DASHBOARD */
-body, .main-sidebar, .content-wrapper, .main-header, .box, .small-box {
-  font-family: 'Inter', sans-serif;
+/* ====================================================
+   RESET & BASE
+   ==================================================== */
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
-/* COULEURS DE FOND GLOBALES */
+:root {
+  /* ---- Palette direction 1 : Santé & Bien-être ---- */
+  /* Header / Sidebar : vert forêt profond */
+  --forest-900: #064e3b;   /* plus sombre que la maquette, pour header */
+  --forest-800: #065f46;   /* Header/Sidebar exact maquette */
+  --forest-700: #047857;
+  --forest-600: #059669;
+
+  /* Accent primaire : émeraude vif */
+  --emerald:    #10b981;   /* Accent primaire exact maquette */
+  --emerald-lt: #34d399;   /* version claire */
+  --emerald-dk: #047857;   /* version sombre hover */
+
+  /* Fond principal : blanc verdâtre doux */
+  --bg-main:    #f0fdf9;   /* Fond principal exact maquette */
+  --bg-card:    #ffffff;   /* Cartes KPI */
+  --bg-soft:    #ecfdf5;   /* surfaces légèrement teintées */
+
+  /* Graphiques / data viz */
+  --chart-green:  #6ee7b7; /* Graphiques exact maquette */
+  --chart-green2: #a7f3d0;
+  --chart-green3: #10b981;
+
+  /* Alertes */
+  --alert-mid:  #f59e0b;   /* Alerte modérée exact maquette */
+  --alert-high: #ef4444;   /* Alerte élevée exact maquette */
+  --alert-low:  #10b981;   /* Alerte faible */
+
+  /* Neutres verts (remplacent les slates froids) */
+  --slate-50:  #f0fdf9;
+  --slate-100: #d1fae5;
+  --slate-200: #a7f3d0;
+  --slate-300: #6ee7b7;
+  --slate-400: #a7f3d0;   /* menthe pâle — JAMAIS de gris sur fond vert */
+  --slate-600: #374151;
+  --slate-700: #1f2937;
+  --slate-800: #111827;
+  --slate-900: #064e3b;   /* fond sidebar */
+
+  /* Compatibilité arrière : teal-* remappé sur la direction 1 */
+  --teal-50:  #ecfdf5;
+  --teal-100: #d1fae5;
+  --teal-200: #a7f3d0;
+  --teal-400: #10b981;    /* ← accent primaire direction 1 */
+  --teal-600: #047857;
+  --teal-800: #065f46;
+  --teal-900: #064e3b;
+
+  --amber-50:  #fffbeb;
+  --amber-400: #f59e0b;   /* alerte modérée */
+  --amber-600: #d97706;
+
+  --rose-50:  #fff1f2;
+  --rose-400: #f87171;
+  --rose-600: #ef4444;    /* alerte élevée */
+
+  --blue-50:  #eff6ff;
+  --blue-400: #60a5fa;
+  --blue-600: #2563eb;
+
+  --purple-50:  #f5f3ff;
+  --purple-400: #a78bfa;
+  --purple-600: #7c3aed;
+
+  --sidebar-width: 240px;
+  --header-height: 56px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --shadow-sm: 0 1px 3px rgba(15,23,42,0.06), 0 1px 2px rgba(15,23,42,0.04);
+  --shadow-md: 0 4px 12px rgba(15,23,42,0.08), 0 2px 4px rgba(15,23,42,0.04);
+  --shadow-lg: 0 12px 28px rgba(15,23,42,0.1), 0 4px 8px rgba(15,23,42,0.06);
+  --transition: all 0.2s cubic-bezier(0.4,0,0.2,1);
+}
+
+body,
+.main-sidebar,
+.content-wrapper,
+.main-header,
+.box,
+.small-box,
+.sidebar-menu li a,
+.info-box {
+  font-family: 'DM Sans', sans-serif !important;
+}
+
+/* ====================================================
+   HEADER
+   ==================================================== */
+
+.main-header {
+  z-index: 1030 !important;
+}
+
 .skin-blue .main-header .logo {
-  background-color: #0f172a; /* bleu nuit */
-  font-weight: 600;
-  letter-spacing: 0.5px;
+  background: var(--forest-800) !important;
+  color: #ffffff !important;
+  font-family: 'Nunito', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 15px !important;
+  letter-spacing: -0.01em;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  padding: 0 16px !important;
+  /* PAS de display:flex ici — c'est ce qui causait le décalage sur grand écran.
+     shinydashboard positionne .logo en absolu sur la largeur de la sidebar. */
+  line-height: 50px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
+
+/* Logo ::before supprimé — le pictogramme est géré dans le titre R Shiny
+   via tags$i() directement dans dashboardHeader(), ce qui est plus fiable
+   que le pseudo-élément CSS sur un élément shinydashboard. */
 
 .skin-blue .main-header .navbar {
-  background-color: #1e293b; /* bleu profond */
+  background: var(--forest-800) !important;  /* #065f46 — unifié avec le logo */
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 2px 8px rgba(6,79,59,0.25);
 }
+
+.skin-blue .main-header .navbar .sidebar-toggle {
+  color: var(--slate-300);
+}
+
+.skin-blue .main-header .navbar .sidebar-toggle:hover {
+  color: #ffffff;
+  background: rgba(255,255,255,0.06);
+}
+
+/* ====================================================
+   SIDEBAR
+   ==================================================== */
 
 .skin-blue .main-sidebar {
-  background-color: #ffffff;
-  border-right: 1px solid #e2e8f0;
+  background: var(--slate-900) !important;
+  border-right: none;
+  box-shadow: 2px 0 20px rgba(15,23,42,0.15);
+  transition: var(--transition);
 }
 
+.sidebar {
+  padding-top: 8px;
+}
+
+/* Menu items */
 .skin-blue .sidebar-menu > li > a {
-  color: #334155;
-  font-weight: 500;
-  transition: all 0.2s ease;
+  color: var(--slate-400) !important;
+  font-weight: 400;
+  font-size: 14px;
+  padding: 11px 16px 11px 20px;
+  margin: 2px 10px;
+  border-radius: var(--radius-sm);
+  transition: var(--transition);
+  border-left: 2px solid transparent;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .skin-blue .sidebar-menu > li > a:hover {
-  background-color: #f1f5f9;
-  color: #0f172a;
+  background: rgba(255,255,255,0.06) !important;
+  color: #ffffff !important;
+  border-left-color: var(--teal-400);
 }
 
-.skin-blue .sidebar-menu > li.active > a {
-  background-color: #eef2ff;
-  color: #3b82f6;
-  border-left-color: #3b82f6;
-  font-weight: 600;
+.skin-blue .sidebar-menu > li.active > a,
+.skin-blue .sidebar-menu > li.active > a:hover {
+  background: rgba(29,168,122,0.15) !important;
+  color: var(--teal-200) !important;
+  border-left-color: var(--teal-400) !important;
+  font-weight: 500;
 }
 
-/* HEADER TITRE */
-.main-header .logo {
-  font-size: 18px;
+.skin-blue .sidebar-menu > li > a .fa,
+.skin-blue .sidebar-menu > li > a .fas,
+.skin-blue .sidebar-menu > li > a .far,
+.skin-blue .sidebar-menu > li > a .fab {
+  width: 18px;
+  text-align: center;
+  font-size: 15px;
+  opacity: 0.8;
 }
 
-/* BOXES (CARTES) */
+.skin-blue .sidebar-menu > li.active > a .fa,
+.skin-blue .sidebar-menu > li.active > a .fas {
+  color: var(--teal-400);
+  opacity: 1;
+}
+
+/* Separateur HR */
+.sidebar hr {
+  border-color: rgba(255,255,255,0.07);
+  margin: 12px 16px;
+}
+
+/* Labels de filtres — menthe pâle opaque sur fond forêt */
+.sidebar .control-label {
+  color: #a7f3d0 !important;    /* menthe clair opaque — contraste fort sur #065f46 */
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.09em !important;
+  margin-bottom: 6px;
+  display: block;
+}
+
+.sidebar .form-group {
+  padding: 0 14px;
+  margin-bottom: 14px;
+}
+
+/* Selects dans la sidebar */
+.sidebar .form-control,
+.sidebar .selectize-input {
+  background: rgba(255,255,255,0.10) !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  border-radius: var(--radius-sm) !important;
+  color: #ffffff !important;          /* texte blanc pur dans les selects */
+  font-size: 13px !important;
+  font-family: 'Nunito', sans-serif !important;
+  transition: var(--transition);
+  padding: 7px 10px !important;
+}
+
+.sidebar .form-control:focus,
+.sidebar .selectize-input.focus {
+  border-color: #6ee7b7 !important;
+  box-shadow: 0 0 0 3px rgba(110,231,183,0.25) !important;
+  outline: none;
+}
+
+/* Checkboxes — texte blanc, lisible sur fond forêt */
+.sidebar .checkbox label {
+  color: #d1fae5 !important;    /* vert très pâle opaque */
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.sidebar .checkbox label:hover {
+  color: #ffffff !important;
+}
+
+/* Scrollbar sidebar */
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-track { background: transparent; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 10px; }
+
+/* ====================================================
+   FOND PRINCIPAL
+   ==================================================== */
+
+.content-wrapper,
+.right-side {
+  background: var(--slate-50) !important;
+  min-height: calc(100vh - var(--header-height));
+}
+
+.content {
+  padding: 20px 24px;
+}
+
+/* ====================================================
+   BOXES / CARTES
+   ==================================================== */
+
 .box {
-  border-radius: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03);
-  transition: transform 0.2s, box-shadow 0.2s;
-  border-top: 3px solid #3b82f6;
+  border-radius: var(--radius-lg) !important;
+  border: 1px solid var(--slate-200) !important;
+  border-top: none !important;
+  box-shadow: var(--shadow-sm) !important;
+  background: #ffffff !important;
+  transition: var(--transition);
+  overflow: hidden;
   margin-bottom: 20px;
 }
 
 .box:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+  box-shadow: var(--shadow-md) !important;
+  transform: translateY(-1px);
 }
 
 .box-header {
-  padding: 12px 16px;
-  border-bottom: 1px solid #f1f5f9;
+  padding: 16px 20px 12px !important;
+  border-bottom: 1px solid var(--slate-100) !important;
+  background: #ffffff !important;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.box-header::before {
+  content: '';
+  display: block;
+  width: 3px;
+  height: 18px;
+  background: var(--teal-400);
+  border-radius: 2px;
+  flex-shrink: 0;
 }
 
 .box-title {
-  font-weight: 600;
-  font-size: 16px;
-  color: #0f172a;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  color: var(--slate-800) !important;
+  letter-spacing: -0.01em;
 }
 
-/* VALUE BOX (KPI) */
+.box-body {
+  padding: 16px 20px !important;
+}
+
+/* couleurs accent sur border top du box */
+.box.box-primary   { border-top: 3px solid var(--teal-400) !important; }
+.box.box-success   { border-top: 3px solid #10b981 !important; }
+.box.box-warning   { border-top: 3px solid var(--amber-400) !important; }
+.box.box-danger    { border-top: 3px solid var(--rose-400) !important; }
+.box.box-info      { border-top: 3px solid var(--blue-400) !important; }
+
+/* ====================================================
+   VALUE BOX / KPI CARDS
+   ==================================================== */
+
 .small-box {
-  border-radius: 20px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  transition: all 0.2s;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-sm) !important;
+  overflow: hidden;
+  transition: var(--transition);
+  position: relative;
 }
 
 .small-box:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-lg) !important;
+}
+
+.small-box h3 {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 32px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.03em !important;
+  line-height: 1 !important;
+  margin-bottom: 4px !important;
+}
+
+.small-box p {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  opacity: 0.88;
+  letter-spacing: 0.01em;
 }
 
 .small-box .icon {
-  font-size: 48px;
-  opacity: 0.2;
-  transition: opacity 0.2s;
+  font-size: 52px !important;
+  opacity: 0.15 !important;
+  transition: opacity 0.25s;
+  top: 10px !important;
+  right: 10px !important;
 }
 
 .small-box:hover .icon {
-  opacity: 0.4;
+  opacity: 0.28 !important;
 }
 
-/* PERSONNALISATION DES COULEURS DES VALUE BOX (par défaut shinydashboard, on renforce) */
-.bg-blue, .bg-green, .bg-yellow, .bg-red, .bg-aqua, .bg-purple {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+.small-box > .inner {
+  padding: 18px 20px 14px !important;
 }
 
-.bg-green {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+.small-box .small-box-footer {
+  display: none !important;
 }
 
-.bg-yellow {
-  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+/* Couleurs gradient KPI */
+.bg-blue  { background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important; }
+.bg-green { background: linear-gradient(135deg, #059669 0%, #047857 100%) !important; }
+.bg-yellow,
+.bg-orange { background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important; }
+.bg-red    { background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important; }
+.bg-aqua   { background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%) !important; }
+.bg-purple { background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%) !important; }
+.bg-maroon { background: linear-gradient(135deg, #9f1239 0%, #881337 100%) !important; }
+
+/* ====================================================
+   PAGE D'ACCUEIL (HOME)
+   ==================================================== */
+
+.home-page {
+  min-height: 100vh;
+  /* Fond vert forêt mais moins sombre qu'avant :
+     on remonte de #064e3b → #0a5c44 au centre pour que les icônes
+     et textes blancs/menthe soient lisibles sans lunettes */
+  background: linear-gradient(
+    160deg,
+    #054433 0%,       /* haut gauche : forêt profond */
+    #0a6647 40%,      /* centre : forêt moyen, lisible */
+    #0d7a55 100%      /* bas droit : légèrement plus clair */
+  );
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 60px 24px 40px;
+  position: relative;
+  overflow: hidden;
 }
 
-.bg-red {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%) !important;
+/* Motif de fond discret — reflets verts clairs sur fond forêt */
+.home-page::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    radial-gradient(circle at 15% 25%, rgba(110,231,183,0.10) 0%, transparent 45%),
+    radial-gradient(circle at 85% 75%, rgba(16,185,129,0.08) 0%, transparent 45%);
+  pointer-events: none;
 }
 
-/* SIDEBAR SCROLLBAR (plus moderne) */
-.sidebar-menu {
-  scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 #f1f5f9;
+.home-logo-circle {
+  width: 72px;
+  height: 72px;
+  /* Fond émeraude vif sur fond forêt = fort contraste, icône lisible */
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  box-shadow: 0 8px 24px rgba(16,185,129,0.40);
 }
 
-.sidebar-menu::-webkit-scrollbar {
-  width: 5px;
+.home-logo-circle .fa,
+.home-logo-circle .fa-solid {
+  font-size: 30px;
+  color: #ffffff !important;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.2);
 }
 
-.sidebar-menu::-webkit-scrollbar-track {
-  background: #f1f5f9;
-}
-
-.sidebar-menu::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 10px;
-}
-
-/* FILTRES DANS LA SIDEBAR */
-.form-group {
+.home-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(29,168,122,0.15);
+  border: 1px solid rgba(29,168,122,0.3);
+  color: var(--teal-200);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 5px 14px;
+  border-radius: 99px;
+  letter-spacing: 0.03em;
   margin-bottom: 20px;
-}
-
-.control-label {
-  font-weight: 600;
-  font-size: 13px;
-  color: #334155;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
 }
 
-.form-control {
-  border-radius: 10px;
-  border: 1px solid #e2e8f0;
-  padding: 8px 12px;
+.home-title {
+  color: #ffffff;
+  font-size: clamp(28px, 4vw, 44px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  text-align: center;
+  margin: 0 auto 12px;
+  max-width: 680px;
+}
+
+.home-title span {
+  color: var(--teal-400);
+}
+
+.home-subtitle {
+  color: var(--slate-400);
+  font-size: 16px;
+  font-weight: 400;
+  text-align: center;
+  max-width: 520px;
+  margin: 0 auto 40px;
+  line-height: 1.65;
+}
+
+/* KPI CARDS sur la home */
+.home-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  width: 100%;
+  max-width: 880px;
+  margin: 0 auto 36px;
+}
+
+.home-kpi-card {
+  background: rgba(255,255,255,0.12);   /* plus opaque = carte visible */
+  border: 1px solid rgba(255,255,255,0.20);
+  border-radius: var(--radius-md);
+  padding: 20px 16px;
+  text-align: center;
+  transition: var(--transition);
+  backdrop-filter: blur(6px);
+}
+
+.home-kpi-card:hover {
+  background: rgba(255,255,255,0.18);
+  border-color: rgba(255,255,255,0.35);
+  transform: translateY(-2px);
+}
+
+.home-kpi-value {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+/* home-kpi-label : défini plus bas dans la section TEXTES HOME */
+
+.home-kpi-icon {
+  font-size: 22px;
+  color: #6ee7b7 !important;   /* menthe clair — lisible sur tout fond vert */
+  margin-bottom: 10px;
+}
+
+/* ====================================================
+   TEXTES HOME — RÈGLE FONDAMENTALE :
+   Sur fond vert foncé, AUCUN gris. Uniquement blanc ou menthe pâle opaque.
+   Ratio de contraste cible : ≥ 4.5:1 (WCAG AA)
+   ==================================================== */
+
+/* Subtitle : blanc légèrement teinté vert, opaque */
+.home-subtitle {
+  color: #d1fae5;              /* vert très pâle opaque — ratio ~7:1 sur #0a6647 */
+  font-size: 16px;
+  font-weight: 400;
+  text-align: center;
+  max-width: 520px;
+  margin: 0 auto 40px;
+  line-height: 1.65;
+}
+
+/* Labels KPI : blanc pur pour les valeurs chiffrées */
+.home-kpi-value {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: #ffffff;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+/* Labels KPI : menthe très clair opaque */
+.home-kpi-label {
+  font-size: 11px;
+  color: #a7f3d0;              /* menthe clair opaque — ratio ~5:1 */
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+/* Badge texte */
+.home-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.22);
+  color: #ffffff;              /* blanc pur — lisible partout */
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 99px;
+  letter-spacing: 0.04em;
+  margin-bottom: 20px;
+  text-transform: uppercase;
+}
+
+/* Feature cards — titres */
+.home-feature-title {
+  color: #ffffff;              /* blanc pur */
   font-size: 13px;
-  transition: border 0.2s;
+  font-weight: 700;
+  margin-bottom: 6px;
 }
 
-.form-control:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgba(59,130,246,0.2);
+/* Feature cards — descriptions */
+.home-feature-desc {
+  color: #d1fae5;              /* vert très pâle opaque — lisible */
+  font-size: 12px;
+  line-height: 1.6;
 }
 
-/* CHECKBOX GROUP (troubles) */
-.checkbox {
-  margin-top: 5px;
-  margin-bottom: 5px;
+/* Footer home */
+.home-footer {
+  margin-top: 48px;
+  color: #a7f3d0;              /* menthe clair opaque — lisible */
+  font-size: 12px;
+  text-align: center;
 }
 
-.checkbox label {
-  font-weight: normal;
-  color: #334155;
+/* Bouton CTA */
+.btn-enter-dashboard {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--teal-400);
+  color: #ffffff;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 14px 32px;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 4px 16px rgba(29,168,122,0.4);
+  letter-spacing: -0.01em;
+  text-decoration: none;
 }
 
-/* HR SEPARATOR */
-hr {
-  border-top: 1px solid #e2e8f0;
-  margin: 15px 0;
+.btn-enter-dashboard:hover {
+  background: var(--teal-600);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(29,168,122,0.5);
+  color: #ffffff;
+  text-decoration: none;
 }
 
-/* ONGLETS MENU (sidebarMenu) déjà stylé plus haut */
-/* CONTENU PRINCIPAL : fond clair */
-.content-wrapper, .right-side {
-  background-color: #f8fafc;
+.btn-enter-dashboard .fa {
+  font-size: 16px;
+  transition: transform 0.2s;
 }
 
-/* TITRES DANS LES BOX PLOTLY (optionnel) */
-.js-plotly-plot .plotly .main-title {
-  font-family: 'Inter', sans-serif !important;
+.btn-enter-dashboard:hover .fa {
+  transform: translateX(4px);
+}
+
+/* Description cards sous la home */
+.home-features {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  width: 100%;
+  max-width: 880px;
+  margin: 36px auto 0;
+}
+
+.home-feature-card {
+  background: rgba(255,255,255,0.10);
+  border: 1px solid rgba(255,255,255,0.16);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  transition: var(--transition);
+}
+
+.home-feature-card:hover {
+  background: rgba(255,255,255,0.16);
+  border-color: rgba(255,255,255,0.28);
+  transform: translateY(-2px);
+}
+
+.home-feature-icon {
+  width: 38px;
+  height: 38px;
+  /* Fond émeraude moyen = visible sur fond forêt */
+  background: rgba(16,185,129,0.25);
+  border: 1px solid rgba(110,231,183,0.3);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.home-feature-icon .fa,
+.home-feature-icon .fa-solid {
+  font-size: 17px;
+  color: #6ee7b7 !important;  /* menthe clair sur fond forêt = lisible */
+}
+
+.home-feature-title {
+  color: var(--slate-200);
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.home-feature-desc {
+  color: var(--slate-400);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+/* Footer home */
+.home-footer {
+  margin-top: 48px;
+  color: var(--slate-600);
+  font-size: 12px;
+  text-align: center;
+}
+
+/* ====================================================
+   TABS BODY (supprimer padding inutile)
+   ==================================================== */
+
+.tab-pane {
+  padding: 4px 0;
+}
+
+/* ====================================================
+   SELECTIZE (dropdowns dans sidebar)
+   ==================================================== */
+
+.selectize-dropdown {
+  border-radius: var(--radius-sm) !important;
+  border: 1px solid var(--slate-200) !important;
+  box-shadow: var(--shadow-md) !important;
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 13px;
+}
+
+.selectize-dropdown .option {
+  padding: 8px 12px !important;
+  color: var(--slate-700);
+}
+
+.selectize-dropdown .option:hover,
+.selectize-dropdown .option.active {
+  background: var(--teal-50) !important;
+  color: var(--teal-800) !important;
+}
+
+/* ====================================================
+   DATATABLE
+   ==================================================== */
+
+.dataTables_wrapper {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 13px;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--slate-200);
+  padding: 6px 10px;
+  font-size: 13px;
+}
+
+table.dataTable thead th {
+  background: var(--slate-50) !important;
+  color: var(--slate-600) !important;
   font-weight: 600 !important;
+  font-size: 12px !important;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 2px solid var(--slate-200) !important;
+  padding: 10px 12px !important;
 }
 
-/* STYLE POUR LES GRAPH STATIC (grid, lollipop) */
-.plot-container {
-  background: white;
-  border-radius: 12px;
-  padding: 5px;
+table.dataTable tbody td {
+  padding: 10px 12px !important;
+  border-bottom: 1px solid var(--slate-100) !important;
+  color: var(--slate-700);
 }
 
-/* RESPONSIVE : ajustement sur mobile */
-@media (max-width: 768px) {
-  .box {
-    border-radius: 12px;
+table.dataTable tbody tr:hover td {
+  background: var(--teal-50) !important;
+}
+
+/* ====================================================
+   PAGE TITLE
+   ==================================================== */
+
+.content-header h1 {
+  font-family: 'DM Sans', sans-serif !important;
+  font-size: 22px !important;
+  font-weight: 700 !important;
+  color: var(--slate-800) !important;
+  letter-spacing: -0.02em;
+}
+
+/* ====================================================
+   RESPONSIVE
+   ==================================================== */
+
+@media (max-width: 991px) {
+  .home-kpi-grid,
+  .home-features {
+    grid-template-columns: repeat(2, 1fr);
   }
-  .small-box .icon {
-    font-size: 32px;
+  .home-page {
+    padding: 40px 16px 32px;
+  }
+}
+
+@media (max-width: 600px) {
+  .home-kpi-grid,
+  .home-features {
+    grid-template-columns: 1fr 1fr;
+  }
+  .home-title {
+    font-size: 24px;
   }
   .small-box h3 {
-    font-size: 28px;
-  }
-  .main-header .logo {
-    font-size: 14px;
+    font-size: 24px !important;
   }
 }
+
+/* ====================================================
+   PLOTLY overrides
+   ==================================================== */
+
+.js-plotly-plot .plotly .main-title {
+  font-family: 'DM Sans', sans-serif !important;
+}
+
+/* ====================================================
+   SCROLLBAR GLOBALE
+   ==================================================== */
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--slate-300); border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: var(--slate-400); }
