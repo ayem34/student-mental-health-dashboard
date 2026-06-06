@@ -4,6 +4,7 @@
 
 library(shiny)
 library(shinydashboard)
+library(shinymanager)
 
 library(tidyverse)
 library(plotly)
@@ -14,6 +15,28 @@ source("R/data_cleaning.R")
 source("R/custom_geom.R")
 source("R/grid_tools.R")
 source("R/helpers.R")
+
+
+#====================================================
+# AUTHENTIFICATION
+#====================================================
+credentials <- data.frame(
+  
+  user = c(
+    "admin",
+    "user1",
+    "user2"
+  ),
+  
+  password = c(
+    "admin123",
+    "data2026",
+    "manager123"
+  ),
+  stringsAsFactors = FALSE
+  
+)
+
 
 #====================================================
 # DONNEES
@@ -89,7 +112,9 @@ theme_set(theme_mental())
 # UI
 #====================================================
 
-ui <- dashboardPage(
+ui <-  secure_app(
+  
+  dashboardPage(
   
   skin = "blue",
   
@@ -539,6 +564,7 @@ ui <- dashboardPage(
     
   )
   
+ )
 )
 
 #====================================================
@@ -546,6 +572,14 @@ ui <- dashboardPage(
 #====================================================
 
 server <- function(input, output, session) {
+  
+  auth <- secure_server(
+    
+    check_credentials(
+      credentials
+    )
+    
+  )
   
   # Navigation depuis le bouton Home → onglet Profil
   observeEvent(input$go_to_profil, {
